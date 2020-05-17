@@ -1,0 +1,25 @@
+{
+  "name": "syc-grafana-button-panel",
+  "version": "0.1.0",
+  "description": "Grafana Button Control Panel",
+  "scripts": {
+    "build": "grafana-toolkit plugin:build",
+    "test": "grafana-toolkit plugin:test",
+    "dev": "grafana-toolkit plugin:dev",
+    "watch": "grafana-toolkit plugin:dev --watch"
+  },
+  "repository": "github:speakyourcode/grafana-button-panel",
+  "author": "Speak Your Code",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/speakyourcode/grafana-button-panel/issues",
+    "email": "speakyourcode.com@gmail.com"
+  },
+  "devDependencies": {
+    "@grafana/data": "next",
+    "@grafana/toolkit": "next",
+    "@grafana/ui": "next",
+    "@grafana/runtime": "next",
+    "emotion": "10.0.27"
+  }
+}
