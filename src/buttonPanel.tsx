@@ -10,7 +10,7 @@ export const ButtonPanel: React.FC<Props> = ({ options }) => {
     <HorizontalGroup justify="center">
       {options.buttons.map((b: ButtonOptions, index: number) => (
         <Button key={index} variant="primary">
-          {b.text} {b.query} {b.datasource}
+          {b.text || 'Button'}
         </Button>
       ))}
     </HorizontalGroup>

@@ -1,6 +1,6 @@
 import { PanelOptionsEditorBuilder, SelectableValue } from '@grafana/data';
 import { getBackendSrv } from '@grafana/runtime';
-import { Button, Field, Input, Select } from '@grafana/ui';
+import { Button, Collapse, Field, Input, Select } from '@grafana/ui';
 import React from 'react';
 import { ButtonOptions, Options } from 'types';
 
@@ -11,6 +11,7 @@ interface EditorProps {
 
 const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
   const [elems, setElems] = React.useState<SelectableValue<string>[]>();
+  const [isOpen, setOpen] = React.useState<boolean>(true);
   React.useEffect(() => {
     let isSubscribed = true;
     const fetchData = async () => {
@@ -32,11 +33,17 @@ const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
   return (
     <React.Fragment>
       {buttons.map((b: ButtonOptions, index: number) => (
-        <div>
-          <Field label="Text" description="Text to be displayed on button">
+        <Collapse
+          label={'Button ' + (index + 1).toString()}
+          isOpen={isOpen}
+          collapsible
+          onToggle={() => setOpen(!isOpen)}
+        >
+          <Field label="Text" description="Text to be displayed on the button">
             <Input
               id={'t-' + index.toString()}
               value={b.text}
+              placeholder="Button"
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                 let button = { ...buttons[index] };
                 onChange([
@@ -74,11 +81,31 @@ const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
               }}
             />
           </Field>
-          <Button variant="secondary" icon="plus" size="sm">
-            Add Button
-          </Button>
-        </div>
+          <Field>
+            <Button
+              icon="trash-alt"
+              variant="destructive"
+              onClick={() => {
+                console.log('trash');
+              }}
+            >
+              Delete
+            </Button>
+          </Field>
+        </Collapse>
       ))}
+      <Field>
+        <Button
+          variant="secondary"
+          icon="plus"
+          size="sm"
+          onClick={() => {
+            onChange([...buttons, { text: '', datasource: '', query: '' }]);
+          }}
+        >
+          Add Button
+        </Button>
+      </Field>
     </React.Fragment>
   );
 };
@@ -87,8 +114,8 @@ export function addEditor(builder: PanelOptionsEditorBuilder<Options>) {
   builder.addCustomEditor({
     id: 'buttons',
     path: 'buttons',
-    name: 'Buttons',
-    defaultValue: [{ text: 'click', datasource: '', query: '' }],
+    name: '',
+    defaultValue: [{ text: '', datasource: '', query: '' }],
     editor: props => <Editor buttons={props.value} onChange={props.onChange} />,
   });
 }
