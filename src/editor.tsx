@@ -1,6 +1,13 @@
 import { PanelOptionsEditorBuilder, SelectableValue } from '@grafana/data';
 import { getBackendSrv } from '@grafana/runtime';
-import { Button, Collapse, Field, Input, Select } from '@grafana/ui';
+import {
+  Button,
+  Collapse,
+  Field,
+  Input,
+  RadioButtonGroup,
+  Select,
+} from '@grafana/ui';
 import React from 'react';
 import { ButtonOptions, Options } from 'types';
 
@@ -11,83 +18,101 @@ interface EditorProps {
 
 const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
   const [elems, setElems] = React.useState<SelectableValue<string>[]>();
-  const [isOpen, setOpen] = React.useState<boolean>(true);
+  const [isOpen, setOpen] = React.useState<boolean[]>([true]);
   React.useEffect(() => {
-    let isSubscribed = true;
+    let cancel = false;
     const fetchData = async () => {
       const ds = await getBackendSrv().get('/api/datasources');
-      if (isSubscribed)
+      if (!cancel)
         setElems(
-          ds.map((i: any) => ({
-            label: i.name,
-            value: i.name,
-            name: i.name,
-          }))
+          ds.map((i: any) => ({ label: i.name, value: i.name, name: i.name }))
         );
     };
     fetchData();
     return (): void => {
-      isSubscribed = false;
+      cancel = true;
     };
   }, []);
+
+  const updateButtons = (index: number, newButton: ButtonOptions) => {
+    let currentButton = { ...buttons[index] };
+    onChange([
+      ...buttons.slice(0, index),
+      {
+        text: newButton.text || currentButton.text,
+        datasource: newButton.datasource || currentButton.datasource,
+        query: newButton.query || currentButton.query,
+        variant: newButton.variant || currentButton.variant,
+      },
+      ...buttons.slice(index + 1),
+    ]);
+  };
+
   return (
     <React.Fragment>
-      {buttons.map((b: ButtonOptions, index: number) => (
+      {buttons.map((b: ButtonOptions, i: number) => (
         <Collapse
-          label={'Button ' + (index + 1).toString()}
-          isOpen={isOpen}
+          label={'Button ' + (i + 1).toString()}
+          isOpen={isOpen[i]}
           collapsible
-          onToggle={() => setOpen(!isOpen)}
+          onToggle={() =>
+            setOpen([...isOpen.slice(0, i), !isOpen[i], ...isOpen.slice(i + 1)])
+          }
         >
           <Field label="Text" description="Text to be displayed on the button">
             <Input
-              id={'t-' + index.toString()}
+              id={'t-' + i.toString()}
               value={b.text}
               placeholder="Button"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                let button = { ...buttons[index] };
-                onChange([
-                  ...buttons.slice(0, index),
-                  { text: e.target.value, datasource: button.datasource, query: button.query },
-                  ...buttons.slice(index + 1),
-                ]);
-              }}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                updateButtons(i, { text: e.target.value })
+              }
             />
           </Field>
-          <Field label="Datasource" description="Select Datasource for the query">
+          <Field
+            label="Datasource"
+            description="Choose the Datasource for the query"
+          >
             <Select
-              onChange={(e: SelectableValue<string>) => {
-                let button = { ...buttons[index] };
-                onChange([
-                  ...buttons.slice(0, index),
-                  { text: button.text, datasource: e.value || '', query: button.query },
-                  ...buttons.slice(index + 1),
-                ]);
-              }}
+              onChange={(e: SelectableValue<string>) =>
+                updateButtons(i, { datasource: e.value })
+              }
               options={elems}
             />
           </Field>
-          <Field label="Query" description="Query to be triggered on Button Click">
+          <Field
+            label="Query"
+            description="Query to be triggered on Button Click"
+          >
             <Input
-              id={'q-' + index.toString()}
+              id={'q-' + i.toString()}
               value={b.query}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                let button = { ...buttons[index] };
-                onChange([
-                  ...buttons.slice(0, index),
-                  { text: button.text, datasource: button.datasource, query: e.target.value },
-                  ...buttons.slice(index + 1),
-                ]);
-              }}
+              placeholder="Query"
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                updateButtons(i, { query: e.target.value })
+              }
             />
+          </Field>
+          <Field label="Color" description="Color of the button">
+            <RadioButtonGroup
+              options={[
+                { label: 'Primary', value: 'primary' },
+                { label: 'Secondary', value: 'secondary' },
+                { label: 'Destructive', value: 'destructive' },
+                { label: 'Link', value: 'link' },
+              ]}
+              value={b.variant || 'primary'}
+              fullWidth
+              onChange={(e: any) => updateButtons(i, { variant: e })}
+            ></RadioButtonGroup>
           </Field>
           <Field>
             <Button
               icon="trash-alt"
               variant="destructive"
-              onClick={() => {
-                console.log('trash');
-              }}
+              onClick={() =>
+                onChange([...buttons.slice(0, i), ...buttons.slice(i + 1)])
+              }
             >
               Delete
             </Button>
@@ -111,11 +136,26 @@ const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
 };
 
 export function addEditor(builder: PanelOptionsEditorBuilder<Options>) {
-  builder.addCustomEditor({
-    id: 'buttons',
-    path: 'buttons',
-    name: '',
-    defaultValue: [{ text: '', datasource: '', query: '' }],
-    editor: props => <Editor buttons={props.value} onChange={props.onChange} />,
-  });
+  builder
+    .addRadio({
+      path: 'orientation',
+      name: 'Orientation',
+      description: 'Stacking direction in case of multiple buttons',
+      defaultValue: 'horizontal',
+      settings: {
+        options: [
+          { value: 'horizontal', label: 'Horizontal' },
+          { value: 'vertical', label: 'Vertical' },
+        ],
+      },
+    })
+    .addCustomEditor({
+      id: 'buttons',
+      path: 'buttons',
+      name: 'Button Configuration',
+      defaultValue: [{ text: '', datasource: '', query: '' }],
+      editor: props => (
+        <Editor buttons={props.value} onChange={props.onChange} />
+      ),
+    });
 }

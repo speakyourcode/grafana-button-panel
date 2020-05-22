@@ -1,18 +1,32 @@
 import { PanelProps } from '@grafana/data';
-import { Button, HorizontalGroup } from '@grafana/ui';
+import { Button, HorizontalGroup, VerticalGroup } from '@grafana/ui';
 import React from 'react';
 import { ButtonOptions, Options } from 'types';
 
 interface Props extends PanelProps<Options> {}
 
-export const ButtonPanel: React.FC<Props> = ({ options }) => {
+const Buttons: React.FC<Options> = ({ buttons }) => {
   return (
-    <HorizontalGroup justify="center">
-      {options.buttons.map((b: ButtonOptions, index: number) => (
-        <Button key={index} variant="primary">
+    <React.Fragment>
+      {buttons.map((b: ButtonOptions, index: number) => (
+        <Button key={index} variant={b.variant}>
           {b.text || 'Button'}
         </Button>
       ))}
-    </HorizontalGroup>
+    </React.Fragment>
+  );
+};
+
+export const ButtonPanel: React.FC<Props> = ({ options }) => {
+  return (
+    (options.orientation === 'vertical' && (
+      <VerticalGroup justify="center" align="center">
+        <Buttons {...options} />
+      </VerticalGroup>
+    )) || (
+      <HorizontalGroup justify="center" align="center">
+        <Buttons {...options} />
+      </HorizontalGroup>
+    )
   );
 };
