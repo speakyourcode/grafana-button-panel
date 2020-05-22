@@ -1,10 +1,15 @@
 import { PanelOptionsEditorBuilder, SelectableValue } from '@grafana/data';
 import { getBackendSrv } from '@grafana/runtime';
-import { Select } from '@grafana/ui';
+import { Button, Field, Input, Select } from '@grafana/ui';
 import React from 'react';
-import { SimpleOptions } from 'types';
+import { ButtonOptions, Options } from 'types';
 
-const MyEditor: React.FC = () => {
+interface EditorProps {
+  buttons: ButtonOptions[];
+  onChange: (buttons: ButtonOptions[]) => void;
+}
+
+const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
   const [elems, setElems] = React.useState<SelectableValue<string>[]>();
   React.useEffect(() => {
     let isSubscribed = true;
@@ -24,15 +29,66 @@ const MyEditor: React.FC = () => {
       isSubscribed = false;
     };
   }, []);
-  return <Select onChange={() => {}} options={elems} />;
+  return (
+    <React.Fragment>
+      {buttons.map((b: ButtonOptions, index: number) => (
+        <div>
+          <Field label="Text" description="Text to be displayed on button">
+            <Input
+              id={'t-' + index.toString()}
+              value={b.text}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                let button = { ...buttons[index] };
+                onChange([
+                  ...buttons.slice(0, index),
+                  { text: e.target.value, datasource: button.datasource, query: button.query },
+                  ...buttons.slice(index + 1),
+                ]);
+              }}
+            />
+          </Field>
+          <Field label="Datasource" description="Select Datasource for the query">
+            <Select
+              onChange={(e: SelectableValue<string>) => {
+                let button = { ...buttons[index] };
+                onChange([
+                  ...buttons.slice(0, index),
+                  { text: button.text, datasource: e.value || '', query: button.query },
+                  ...buttons.slice(index + 1),
+                ]);
+              }}
+              options={elems}
+            />
+          </Field>
+          <Field label="Query" description="Query to be triggered on Button Click">
+            <Input
+              id={'q-' + index.toString()}
+              value={b.query}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                let button = { ...buttons[index] };
+                onChange([
+                  ...buttons.slice(0, index),
+                  { text: button.text, datasource: button.datasource, query: e.target.value },
+                  ...buttons.slice(index + 1),
+                ]);
+              }}
+            />
+          </Field>
+          <Button variant="secondary" icon="plus" size="sm">
+            Add Button
+          </Button>
+        </div>
+      ))}
+    </React.Fragment>
+  );
 };
 
-export function addEditor(builder: PanelOptionsEditorBuilder<SimpleOptions>) {
+export function addEditor(builder: PanelOptionsEditorBuilder<Options>) {
   builder.addCustomEditor({
-    id: 'datasource',
-    path: 'datasource',
-    name: 'Datasource',
-    description: 'Select Datasource for input query',
-    editor: () => <MyEditor />,
+    id: 'buttons',
+    path: 'buttons',
+    name: 'Buttons',
+    defaultValue: [{ text: 'click', datasource: '', query: '' }],
+    editor: props => <Editor buttons={props.value} onChange={props.onChange} />,
   });
 }
