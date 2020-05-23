@@ -7,6 +7,7 @@ import {
   Input,
   RadioButtonGroup,
   Select,
+  TextArea,
 } from '@grafana/ui';
 import React from 'react';
 import { ButtonOptions, Options } from 'types';
@@ -77,18 +78,20 @@ const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
               onChange={(e: SelectableValue<string>) =>
                 updateButtons(i, { datasource: e.value })
               }
+              value={b.datasource}
               options={elems}
             />
           </Field>
           <Field
             label="Query"
-            description="Query to be triggered on Button Click"
+            description="JSON query to be triggered on Button Click"
           >
-            <Input
+            <TextArea
               id={'q-' + i.toString()}
               value={b.query}
-              placeholder="Query"
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+              placeholder="{ query: 'your query' }"
+              rows={5}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
                 updateButtons(i, { query: e.target.value })
               }
             />
