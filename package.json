@@ -17,9 +17,11 @@
   },
   "devDependencies": {
     "@grafana/data": "next",
+    "@grafana/runtime": "next",
     "@grafana/toolkit": "next",
     "@grafana/ui": "next",
-    "@grafana/runtime": "next",
-    "emotion": "10.0.27"
+    "emotion": "10.0.27",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "1.15.2"
   }
 }
