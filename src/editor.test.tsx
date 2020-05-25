@@ -1,6 +1,6 @@
 import { getBackendSrv } from '@grafana/runtime';
 import { Button, Collapse, Field } from '@grafana/ui';
-import { mount, shallow } from 'enzyme';
+import { shallow } from 'enzyme';
 import React from 'react';
 import { Editor, EditorProps } from './editor';
 jest.mock('@grafana/runtime');
@@ -37,9 +37,11 @@ describe('editor', () => {
     };
 
     const mockGet = jest.fn().mockReturnValue([{ name: 'a' }]);
-    getBackendSrv.mockImplementation(() => ({ get: mockGet }));
+    (getBackendSrv as jest.Mock<any>).mockImplementation(() => ({
+      get: mockGet,
+    }));
 
-    const wrapper = mount(<Editor {...props} />);
+    const wrapper = shallow(<Editor {...props} />);
     expect(wrapper.children()).toHaveLength(3);
     const collapse = wrapper.find(Collapse);
     expect(collapse).toHaveLength(2);

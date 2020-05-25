@@ -65,12 +65,14 @@ describe('button panel', () => {
     wrapper.setProps({ options: { buttons: buttons } });
 
     const mockGet = jest.fn().mockReturnValue({ id: 1 });
-    getDataSourceSrv.mockImplementation(() => ({ get: mockGet }));
+    (getDataSourceSrv as jest.Mock<any>).mockImplementation(() => ({
+      get: mockGet,
+    }));
     const mockDataSourceRequest = jest.fn().mockReturnValue({
       status: status,
       statusText: statusText,
     });
-    getBackendSrv.mockImplementation(() => ({
+    (getBackendSrv as jest.Mock<any>).mockImplementation(() => ({
       datasourceRequest: mockDataSourceRequest,
     }));
     const mockEmit = jest.fn();
@@ -103,14 +105,16 @@ describe('button panel', () => {
     wrapper.setProps({ options: { buttons: buttons } });
 
     const mockGet = jest.fn().mockReturnValue({ id: 1 });
-    getDataSourceSrv.mockImplementation(() => ({ get: mockGet }));
+    (getDataSourceSrv as jest.Mock<any>).mockImplementation(() => ({
+      get: mockGet,
+    }));
     const msg = 'msg';
     const mockDataSourceRequest = jest.fn().mockRejectedValue({
       status: statusError,
       statusText: statusText,
       data: { message: msg },
     });
-    getBackendSrv.mockImplementation(() => ({
+    (getBackendSrv as jest.Mock<any>).mockImplementation(() => ({
       datasourceRequest: mockDataSourceRequest,
     }));
     const mockEmit = jest.fn();
