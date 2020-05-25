@@ -59,13 +59,11 @@ export const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
           isOpen={isOpen[i]}
           collapsible
           onToggle={() => {
-            console.log('before', isOpen[i], i);
             setOpen([
               ...isOpen.slice(0, i),
               !isOpen[i],
               ...isOpen.slice(i + 1),
             ]);
-            console.log('after', isOpen[i], i);
           }}
         >
           <Field label="Text" description="Text to be displayed on the button">

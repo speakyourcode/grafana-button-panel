@@ -1,7 +1,8 @@
 import { getBackendSrv } from '@grafana/runtime';
 import { Button, Collapse, Field } from '@grafana/ui';
-import { shallow } from 'enzyme';
+import { mount, ReactWrapper, shallow } from 'enzyme';
 import React from 'react';
+import { act } from 'react-dom/test-utils';
 import { Editor, EditorProps } from './editor';
 jest.mock('@grafana/runtime');
 
@@ -51,8 +52,27 @@ describe('editor', () => {
       expect(c.prop('label')).toBe('Button ' + (i + 1).toString());
       expect(c.prop('collapsible')).toBeTruthy();
       expect(c.prop('isOpen')).toBeFalsy();
-      // c.simulate('toggle');
-      // expect(c.prop('isOpen')).toBeTruthy();
     });
+
+    collapse.first().simulate('toggle');
+    wrapper.update();
+    const open = wrapper.find(Collapse).first();
+    expect(open.prop('isOpen')).toBeTruthy();
+  });
+
+  test('button mount', async () => {
+    const mockOnChange = jest.fn();
+    const props: EditorProps = {
+      buttons: [{ text: 'a' }],
+      onChange: mockOnChange,
+    };
+
+    let wrapper: any = {};
+    await act(async () => {
+      wrapper = mount(<Editor {...props} />);
+    });
+    let collapse: ReactWrapper = wrapper.find(Collapse);
+    expect(collapse).toHaveLength(1);
+    wrapper.unmount();
   });
 });
