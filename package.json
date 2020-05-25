@@ -20,6 +20,7 @@
     "@grafana/runtime": "next",
     "@grafana/toolkit": "next",
     "@grafana/ui": "next",
+    "@types/enzyme": "^3.10.5",
     "emotion": "10.0.27",
     "enzyme": "^3.11.0",
     "enzyme-adapter-react-16": "1.15.2"

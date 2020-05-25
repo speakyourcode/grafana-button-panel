@@ -8,45 +8,46 @@ interface Props extends PanelProps<Options> {}
 
 export const ButtonPanel: React.FC<Props> = ({ options }) => {
   const renderButtons = (buttons: ButtonOptions[]) => {
-    return buttons.map((b: ButtonOptions, index: number) => (
-      <Button
-        key={index}
-        variant={b.variant}
-        onClick={async () => {
-          const payload = JSON.parse(b.query || '');
-          const ds = await getDataSourceSrv().get(b.datasource);
-          try {
-            const resp = await getBackendSrv().datasourceRequest({
-              method: 'POST',
-              url: 'api/tsdb/query',
-              data: {
-                queries: [
-                  {
-                    datasourceId: ds.id,
-                    refId: '1',
-                    ...payload,
-                  },
-                ],
-              },
-            });
-            SystemJS.load('app/core/app_events').then((appEvents: any) => {
-              appEvents.emit(AppEvents.alertSuccess, [
-                b.text + ': ' + resp.status + ' (' + resp.statusText + ')',
+    return buttons.map((b: ButtonOptions, index: number) => {
+      const text = b.text || 'Button';
+      return (
+        <Button
+          key={index}
+          variant={b.variant}
+          onClick={async () => {
+            const payload = JSON.parse(b.query || '{}');
+            const ds = await getDataSourceSrv().get(b.datasource);
+            try {
+              const resp = await getBackendSrv().datasourceRequest({
+                method: 'POST',
+                url: 'api/tsdb/query',
+                data: {
+                  queries: [
+                    {
+                      datasourceId: ds.id,
+                      refId: '1',
+                      ...payload,
+                    },
+                  ],
+                },
+              });
+              const events = await SystemJS.load('app/core/app_events');
+              events.emit(AppEvents.alertSuccess, [
+                text + ': ' + resp.status + ' (' + resp.statusText + ')',
               ]);
-            });
-          } catch (error) {
-            SystemJS.load('app/core/app_events').then((appEvents: any) => {
-              appEvents.emit(AppEvents.alertError, [
-                b.text + ': ' + error.status + ' (' + error.statusText + ')',
+            } catch (error) {
+              const events = await SystemJS.load('app/core/app_events');
+              events.emit(AppEvents.alertError, [
+                text + ': ' + error.status + ' (' + error.statusText + ')',
                 error.data.message,
               ]);
-            });
-          }
-        }}
-      >
-        {b.text || 'Button'}
-      </Button>
-    ));
+            }
+          }}
+        >
+          {text}
+        </Button>
+      );
+    });
   };
 
   return (
