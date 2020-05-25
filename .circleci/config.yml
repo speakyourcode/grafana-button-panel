@@ -50,6 +50,21 @@ jobs:
           name: Build and test frontend
           command: ./node_modules/.bin/grafana-toolkit plugin:ci-build
       - run:
+          name: Run test with coverage
+          command: ./node_modules/.bin/grafana-toolkit plugin:test --coverage
+      - run:
+          name: Setup Code Climate test-reporter
+          command: |
+            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            chmod +x ./cc-test-reporter
+            ./cc-test-reporter before-build
+          when: always
+      - run:
+          name: Send coverage report to Code Climate
+          command:
+            ./cc-test-reporter after-build -t lcov
+          when: always
+      - run:
           name: Move results to ci folder
           command: ./node_modules/.bin/grafana-toolkit plugin:ci-build --finish
       - run:
@@ -63,5 +78,7 @@ jobs:
           - ci/packages
           - ci/dist
           - ci/grafana-test-env
+          - coverage/lcov.info
       - store_artifacts:
           path: ci
+          path: coverage/lcov.info

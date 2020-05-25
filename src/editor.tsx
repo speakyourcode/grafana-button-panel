@@ -18,16 +18,17 @@ export interface EditorProps {
 }
 
 export const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
-  const [elems, setElems] = React.useState<SelectableValue<string>[]>();
+  const [elems, setElems] = React.useState<Array<SelectableValue<string>>>();
   const [isOpen, setOpen] = React.useState<boolean[]>(buttons.map(e => false));
   React.useEffect(() => {
     let cancel = false;
     const fetchData = async () => {
       const ds = await getBackendSrv().get('/api/datasources');
-      if (!cancel)
+      if (!cancel) {
         setElems(
           ds.map((i: any) => ({ label: i.name, value: i.name, name: i.name }))
         );
+      }
     };
     fetchData();
     return (): void => {
