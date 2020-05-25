@@ -12,14 +12,14 @@ import {
 import React from 'react';
 import { ButtonOptions, Options } from 'types';
 
-interface EditorProps {
+export interface EditorProps {
   buttons: ButtonOptions[];
   onChange: (buttons: ButtonOptions[]) => void;
 }
 
-const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
+export const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
   const [elems, setElems] = React.useState<SelectableValue<string>[]>();
-  const [isOpen, setOpen] = React.useState<boolean[]>([true]);
+  const [isOpen, setOpen] = React.useState<boolean[]>(buttons.map(e => false));
   React.useEffect(() => {
     let cancel = false;
     const fetchData = async () => {
@@ -53,12 +53,19 @@ const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
     <React.Fragment>
       {buttons.map((b: ButtonOptions, i: number) => (
         <Collapse
+          key={i}
           label={'Button ' + (i + 1).toString()}
           isOpen={isOpen[i]}
           collapsible
-          onToggle={() =>
-            setOpen([...isOpen.slice(0, i), !isOpen[i], ...isOpen.slice(i + 1)])
-          }
+          onToggle={() => {
+            console.log('before', isOpen[i], i);
+            setOpen([
+              ...isOpen.slice(0, i),
+              !isOpen[i],
+              ...isOpen.slice(i + 1),
+            ]);
+            console.log('after', isOpen[i], i);
+          }}
         >
           <Field label="Text" description="Text to be displayed on the button">
             <Input
