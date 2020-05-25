@@ -50,12 +50,9 @@ jobs:
           name: Build and test frontend
           command: ./node_modules/.bin/grafana-toolkit plugin:ci-build
       - run:
-          name: Run test with coverage
-          command: ./node_modules/.bin/grafana-toolkit plugin:test --coverage
-      - run:
           name: Setup Code Climate test-reporter
           command: |
-            curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+            wget https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 -O cc-test-reporter
             chmod +x ./cc-test-reporter
             ./cc-test-reporter before-build
           when: always
