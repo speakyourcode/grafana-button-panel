@@ -1,0 +1,34 @@
+{
+  "type": "panel",
+  "name": "Button",
+  "id": "syc-grafana-button-panel",
+  "info": {
+    "description": "Grafana Button Control Panel",
+    "author": {
+      "name": "Speak Your Code",
+      "url": "www.speakyourcode.com"
+    },
+    "keywords": ["button", "control", "input"],
+    "logos": {
+      "small": "img/logo.svg",
+      "large": "img/logo.svg"
+    },
+    "links": [
+      {
+        "name": "GitHub",
+        "url": "https://github.com/speakyourcode/grafana-button-panel"
+      },
+      {
+        "name": "License",
+        "url": "https://github.com/speakyourcode/grafana-button-panel/blob/master/LICENSE"
+      }
+    ],
+    "screenshots": [],
+    "version": "0.1.0",
+    "updated": "2020-05-26"
+  },
+  "dependencies": {
+    "grafanaVersion": "7.x.x",
+    "plugins": []
+  }
+}
