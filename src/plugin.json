@@ -1,9 +1,9 @@
 {
   "type": "panel",
   "name": "Button",
-  "id": "syc-grafana-button-panel",
+  "id": "speakyourcode-button-panel",
   "info": {
-    "description": "Grafana Button Control Panel",
+    "description": "Button Control Panel",
     "author": {
       "name": "Speak Your Code",
       "url": "www.speakyourcode.com"

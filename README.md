@@ -8,7 +8,7 @@
 [![Test Coverage](https://api.codeclimate.com/v1/badges/3d8db85bc1cc2b95d314/test_coverage)](https://codeclimate.com/github/speakyourcode/grafana-button-panel/test_coverage)
 
 This panel allows you to create buttons and define actions for them. It can be
-used to add controlling functionality to your dashboards. Actions are defined as
+used to add control functionality to your dashboards. Actions are defined as
 queries to Datasources.
 
 Multiple buttons are allowed within a single panel, they can be arranged either
