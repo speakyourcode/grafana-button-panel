@@ -77,7 +77,5 @@ jobs:
             - coverage/lcov.info
       - store_artifacts:
           path: ci
-      - store_artifacts:
-          path: coverage/lcov.info
       - store_test_results:
-          path: coverage
+          path: ci/jobs/build/coverage

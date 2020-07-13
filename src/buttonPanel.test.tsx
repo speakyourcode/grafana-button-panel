@@ -5,7 +5,12 @@ import {
   LoadingState,
   PanelProps,
 } from '@grafana/data';
-import { getBackendSrv, getDataSourceSrv, SystemJS } from '@grafana/runtime';
+import {
+  getBackendSrv,
+  getDataSourceSrv,
+  getTemplateSrv,
+  SystemJS,
+} from '@grafana/runtime';
 import { Button, HorizontalGroup, VerticalGroup } from '@grafana/ui';
 import { shallow } from 'enzyme';
 import React from 'react';
@@ -64,6 +69,10 @@ describe('button panel', () => {
     ];
     wrapper.setProps({ options: { buttons: buttons } });
 
+    const mockTemplate = jest.fn().mockReturnValue('{}');
+    (getTemplateSrv as jest.Mock<any>).mockImplementation(() => ({
+      replace: mockTemplate,
+    }));
     const mockGet = jest.fn().mockReturnValue({ id: 1 });
     (getDataSourceSrv as jest.Mock<any>).mockImplementation(() => ({
       get: mockGet,
@@ -88,6 +97,7 @@ describe('button panel', () => {
       expect(b.text()).toBe(buttons[i].text);
       b.simulate('click');
       setImmediate(() => {
+        expect(mockTemplate).toHaveBeenCalled();
         expect(mockGet).toHaveBeenCalledWith(buttons[i].datasource);
         expect(mockDataSourceRequest).toHaveBeenCalled();
         expect(mockEmit).toHaveBeenCalledWith(AppEvents.alertSuccess, [
@@ -107,6 +117,10 @@ describe('button panel', () => {
     const mockGet = jest.fn().mockReturnValue({ id: 1 });
     (getDataSourceSrv as jest.Mock<any>).mockImplementation(() => ({
       get: mockGet,
+    }));
+    const mockTemplate = jest.fn().mockReturnValue('{}');
+    (getTemplateSrv as jest.Mock<any>).mockImplementation(() => ({
+      replace: mockTemplate,
     }));
     const msg = 'msg';
     const mockDataSourceRequest = jest.fn().mockRejectedValue({
