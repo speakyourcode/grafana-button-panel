@@ -1,6 +1,6 @@
 {
   "name": "speakyourcode-button-panel",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Grafana Button Control Panel",
   "scripts": {
     "build": "grafana-toolkit plugin:build",
