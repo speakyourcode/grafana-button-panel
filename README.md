@@ -24,9 +24,18 @@ Query field to delete InfluxDB database:
 
 ```json
 {
-  "query": "drop databse 'foo'",
+  "query": "drop database \"foo\"",
   "rawQuery": true,
   "resultFormat": "time_series"
+}
+```
+
+Same example with PostgreSQL:
+
+```json
+{
+  "rawSql": "DROP DATABASE foo;",
+  "format": "table"
 }
 ```
 
