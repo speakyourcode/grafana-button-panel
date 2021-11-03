@@ -2,7 +2,6 @@ import { AppEvents, PanelProps } from '@grafana/data';
 import {
   getBackendSrv,
   getDataSourceSrv,
-  getTemplateSrv,
   SystemJS,
 } from '@grafana/runtime';
 import { Button, HorizontalGroup, VerticalGroup } from '@grafana/ui';
@@ -11,7 +10,7 @@ import { ButtonOptions, Options } from 'types';
 
 interface Props extends PanelProps<Options> {}
 
-export const ButtonPanel: React.FC<Props> = ({ options }) => {
+export const ButtonPanel: React.FC<Props> = ({ options, replaceVariables }) => {
   const renderButtons = (buttons: ButtonOptions[]) => {
     return buttons.map((b: ButtonOptions, index: number) => {
       const text = b.text || 'Button';
@@ -21,7 +20,7 @@ export const ButtonPanel: React.FC<Props> = ({ options }) => {
           variant={b.variant}
           onClick={async () => {
             const payload = JSON.parse(
-              await getTemplateSrv().replace(b.query || '{}')
+              replaceVariables(b.query || '{}')
             );
             const ds = await getDataSourceSrv().get(b.datasource);
             try {
