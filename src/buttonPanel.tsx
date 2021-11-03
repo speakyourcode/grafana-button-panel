@@ -1,9 +1,5 @@
 import { AppEvents, PanelProps } from '@grafana/data';
-import {
-  getBackendSrv,
-  getDataSourceSrv,
-  SystemJS,
-} from '@grafana/runtime';
+import { getBackendSrv, getDataSourceSrv, SystemJS } from '@grafana/runtime';
 import { Button, HorizontalGroup, VerticalGroup } from '@grafana/ui';
 import React from 'react';
 import { ButtonOptions, Options } from 'types';
@@ -19,9 +15,7 @@ export const ButtonPanel: React.FC<Props> = ({ options, replaceVariables }) => {
           key={index}
           variant={b.variant}
           onClick={async () => {
-            const payload = JSON.parse(
-              replaceVariables(b.query || '{}')
-            );
+            const payload = JSON.parse(replaceVariables(b.query || '{}'));
             const ds = await getDataSourceSrv().get(b.datasource);
             try {
               const resp = await getBackendSrv().datasourceRequest({

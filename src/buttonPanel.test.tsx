@@ -5,11 +5,7 @@ import {
   LoadingState,
   PanelProps,
 } from '@grafana/data';
-import {
-  getBackendSrv,
-  getDataSourceSrv,
-  SystemJS,
-} from '@grafana/runtime';
+import { getBackendSrv, getDataSourceSrv, SystemJS } from '@grafana/runtime';
 import { Button, HorizontalGroup, VerticalGroup } from '@grafana/ui';
 import { shallow } from 'enzyme';
 import React from 'react';
