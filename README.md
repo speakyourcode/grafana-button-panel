@@ -1,5 +1,10 @@
 # Grafana Button Control Panel
 
+[![CI](https://github.com/speakyourcode/grafana-button-panel/actions/workflows/ci.yml/badge.svg)](https://github.com/speakyourcode/grafana-button-panel/actions/workflows/ci.yml)
+[![Grafana Compatibility](https://github.com/speakyourcode/grafana-button-panel/actions/workflows/is-compatible.yml/badge.svg)](https://github.com/speakyourcode/grafana-button-panel/actions/workflows/is-compatible.yml)
+[![Maintainability](https://api.codeclimate.com/v1/badges/3d8db85bc1cc2b95d314/maintainability)](https://codeclimate.com/github/speakyourcode/grafana-button-panel/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/3d8db85bc1cc2b95d314/test_coverage)](https://codeclimate.com/github/speakyourcode/grafana-button-panel/test_coverage)
+
 This panel allows you to create buttons and define actions for them. It can be
 used to add control functionality to your dashboards. Actions are defined as
 queries to Datasources.
