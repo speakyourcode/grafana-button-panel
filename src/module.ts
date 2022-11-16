@@ -5,4 +5,4 @@ import { Options } from './types';
 
 export const plugin = new PanelPlugin<Options>(ButtonPanel);
 
-plugin.setPanelOptions(builder => addEditor(builder));
+plugin.setPanelOptions((builder) => addEditor(builder));

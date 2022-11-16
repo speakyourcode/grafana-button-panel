@@ -1,14 +1,19 @@
 {
+  "$schema": "https://raw.githubusercontent.com/grafana/grafana/master/docs/sources/developers/plugins/plugin.schema.json",
   "type": "panel",
-  "name": "Button",
-  "id": "speakyourcode-button-panel",
+  "name": "Speakyourcode Button Panel",
+  "id": "speakyourcode-speakyourcodebutton-panel",
   "info": {
-    "description": "Button Control Panel",
+    "keywords": [
+      "panel",
+      "button",
+      "control",
+      "input"
+    ],
+    "description": "Grafana button control panel",
     "author": {
-      "name": "Speak Your Code",
-      "url": "https://www.speakyourcode.com"
+      "name": "Speak Your Code"
     },
-    "keywords": ["button", "control", "input"],
     "logos": {
       "small": "img/logo.svg",
       "large": "img/logo.svg"
@@ -28,7 +33,7 @@
     "updated": "%TODAY%"
   },
   "dependencies": {
-    "grafanaDependency": ">=7.0.0",
+    "grafanaDependency": ">=9.1.2",
     "plugins": []
   }
 }

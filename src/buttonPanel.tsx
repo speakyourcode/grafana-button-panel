@@ -32,10 +32,8 @@ export const ButtonPanel: React.FC<Props> = ({ options, replaceVariables }) => {
                 },
               });
               const events = await SystemJS.load('app/core/app_events');
-              events.emit(AppEvents.alertSuccess, [
-                text + ': ' + resp.status + ' (' + resp.statusText + ')',
-              ]);
-            } catch (error) {
+              events.emit(AppEvents.alertSuccess, [text + ': ' + resp.status + ' (' + resp.statusText + ')']);
+            } catch (error: any) {
               const events = await SystemJS.load('app/core/app_events');
               events.emit(AppEvents.alertError, [
                 text + ': ' + error.status + ' (' + error.statusText + ')',
