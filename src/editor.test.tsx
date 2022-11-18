@@ -1,7 +1,6 @@
 // import { getBackendSrv } from '@grafana/runtime';
 // import { Button, Collapse, Field } from '@grafana/ui';
 // import { mount, ReactWrapper, shallow } from 'enzyme';
-// import React from 'react';
 // import { act } from 'react-dom/test-utils';
 // import { Editor, EditorProps } from './editor';
 // jest.mock('@grafana/runtime');
@@ -74,3 +73,9 @@
 //     wrapper.unmount();
 //   });
 // });
+
+test('fixme', () => {
+  // FIXME: there seems to be a problem with the package @grafana/data:
+  // as soon as you try to import anything from the package, the following error is thrown:
+  // LanguageProvider cannot reassign to a class (same with DataSourceApi)
+});

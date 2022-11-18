@@ -6,7 +6,13 @@
 //     standardEditorsRegistry.setInit(() => {
 //       return [{ id: 'radio' }] as any;
 //     });
-//     expect(plugin.optionEditors).toBeDefined();
-//     expect(plugin.optionEditors?.list()).toHaveLength(2);
+//     expect(plugin.fieldConfigRegistry).toBeDefined();
+//     expect(plugin.fieldConfigRegistry.list()).toHaveLength(2);
 //   });
 // });
+
+test('fixme', () => {
+  // FIXME: there seems to be a problem with the package @grafana/data:
+  // as soon as you try to import anything from the package, the following error is thrown:
+  // LanguageProvider cannot reassign to a class (same with DataSourceApi)
+});

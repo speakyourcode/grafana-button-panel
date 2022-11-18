@@ -1,11 +1,16 @@
-// import { AppEvents, LoadingState, PanelProps } from '@grafana/data';
+// import { AppEvents, DefaultTimeZone, EventBusSrv, getDefaultTimeRange, LoadingState, PanelProps } from '@grafana/data';
 // import { getBackendSrv, getDataSourceSrv, SystemJS } from '@grafana/runtime';
 // import { Button, HorizontalGroup, VerticalGroup } from '@grafana/ui';
 // import { shallow } from 'enzyme';
-// import React from 'react';
 // import { ButtonOptions, Options } from 'types';
 // import { ButtonPanel } from './buttonPanel';
 // jest.mock('@grafana/runtime');
+
+test('fixme', () => {
+  // FIXME: there seems to be a problem with the package @grafana/data:
+  // as soon as you try to import anything from the package, the following error is thrown:
+  // LanguageProvider cannot reassign to a class (same with DataSourceApi)
+});
 
 // describe('button panel', () => {
 //   const status = 200;
@@ -15,9 +20,11 @@
 
 //   beforeEach(() => {
 //     defaultProps = {
+//       title: 'title',
+//       eventBus: new EventBusSrv(),
 //       id: 1,
 //       data: {
-//         timeRange: Defa,
+//         timeRange: getDefaultTimeRange(),
 //         state: LoadingState.Done,
 //         series: [],
 //       },
@@ -30,7 +37,7 @@
 //       onOptionsChange: () => {},
 //       renderCounter: 1,
 //       replaceVariables: () => '{}',
-//       timeRange: DefaultTimeRange,
+//       timeRange: getDefaultTimeRange(),
 //       timeZone: DefaultTimeZone,
 //       options: {
 //         buttons: [],
