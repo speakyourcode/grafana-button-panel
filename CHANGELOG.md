@@ -1,5 +1,5 @@
 # Changelog
 
-## 1.0.0 (Unreleased)
+## 0.3.0
 
-Initial release.
+- Update to Grafana 9
