@@ -1,5 +1,5 @@
 import { AppEvents, InterpolateFunction, PanelProps } from '@grafana/data';
-import { getBackendSrv, getDataSourceSrv, SystemJS } from '@grafana/runtime';
+import { getAppEvents, getBackendSrv, getDataSourceSrv } from '@grafana/runtime';
 import { Button, HorizontalGroup, VerticalGroup } from '@grafana/ui';
 import React from 'react';
 import { ButtonOptions, Options } from 'types';
@@ -9,6 +9,7 @@ interface Props extends PanelProps<Options> {}
 async function postQuery(button: ButtonOptions, text: string, replaceVariables: InterpolateFunction) {
   const payload = JSON.parse(replaceVariables(button.query || '{}'));
   const ds = await getDataSourceSrv().get(button.datasource);
+  const appEvents = getAppEvents();
   try {
     const resp = await getBackendSrv().datasourceRequest({
       method: 'POST',
@@ -23,11 +24,15 @@ async function postQuery(button: ButtonOptions, text: string, replaceVariables: 
         ],
       },
     });
-    const events = await SystemJS.load('app/core/app_events');
-    events.emit(AppEvents.alertSuccess, [text + ': ' + resp.status + ' (' + resp.statusText + ')']);
+    appEvents.publish({
+      type: AppEvents.alertSuccess.name,
+      payload: [text + ': ' + resp.status + ' (' + resp.statusText + ')'],
+    });
   } catch (error: any) {
-    const events = await SystemJS.load('app/core/app_events');
-    events.emit(AppEvents.alertError, [text + ': ' + error.status + ' (' + error.statusText + ')', error.data.message]);
+    appEvents.publish({
+      type: AppEvents.alertError.name,
+      payload: [text + ': ' + error.status + ' (' + error.statusText + ') ' + error.data.message],
+    });
   }
 }
 
