@@ -1,6 +1,6 @@
 {
   "name": "speakyourcode-button-panel",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Grafana button control panel",
   "scripts": {
     "build": "webpack -c ./.config/webpack/webpack.config.ts --env production",
