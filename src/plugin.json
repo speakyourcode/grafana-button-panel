@@ -28,7 +28,20 @@
         "url": "https://github.com/speakyourcode/grafana-button-panel/blob/master/LICENSE"
       }
     ],
-    "screenshots": [],
+    "screenshots": [
+      {
+        "name": "Panel Options",
+        "path": "img/panel_options.png"
+      },
+      {
+        "name": "Horizontal Orientation",
+        "path": "img/horizontal_orientation.png"
+      },
+      {
+        "name": "Vertical Orientation",
+        "path": "img/vertical_orientation.png"
+      }
+    ],
     "version": "%VERSION%",
     "updated": "%TODAY%"
   },
