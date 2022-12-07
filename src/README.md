@@ -9,7 +9,7 @@ This panel allows you to create buttons and define actions for them. It can be
 used to add control functionality to your dashboards. Actions are defined as
 queries to Datasources.
 
-![PanelOptions](https://raw.githubusercontent.com/speakyourcode/grafana-button-panel/master/img/panel_options.png)
+<img src="https://raw.githubusercontent.com/speakyourcode/grafana-button-panel/master/img/panel_options.png" alt="drawing" width="300"/>
 
 Multiple buttons are allowed within a single panel, they can be arranged either
 horizontally or vertically.
