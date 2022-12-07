@@ -9,13 +9,13 @@ This panel allows you to create buttons and define actions for them. It can be
 used to add control functionality to your dashboards. Actions are defined as
 queries to Datasources.
 
-![PanelOptions](img/panel_options.png)
+![PanelOptions](https://raw.githubusercontent.com/speakyourcode/grafana-button-panel/master/img/panel_options.png)
 
 Multiple buttons are allowed within a single panel, they can be arranged either
 horizontally or vertically.
 
-![Horizontal](img/horizontal_orientation.png)
-![Vertical](img/vertical_orientation.png)
+![Horizontal](https://raw.githubusercontent.com/speakyourcode/grafana-button-panel/master/img/horizontal_orientation.png)
+![Vertical](https://raw.githubusercontent.com/speakyourcode/grafana-button-panel/master/img/vertical_orientation.png)
 
 The query field is a JSON object, that depends on each Datasource type. You can
 use Grafana's Query Inspector to find out what Grafana sends to each Datasource,
