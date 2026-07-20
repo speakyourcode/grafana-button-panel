@@ -1,8 +1,15 @@
 import { PanelOptionsEditorBuilder, SelectableValue } from '@grafana/data';
-import { getBackendSrv } from '@grafana/runtime';
-import { Button, Collapse, Field, Input, RadioButtonGroup, Select, TextArea } from '@grafana/ui';
+import { DataSourcePicker } from '@grafana/runtime';
+import { Button, ButtonVariant, Collapse, Field, Input, RadioButtonGroup, TextArea } from '@grafana/ui';
 import React from 'react';
 import { ButtonOptions, Options } from 'types';
+
+const variantOptions: Array<SelectableValue<ButtonVariant>> = [
+  { label: 'Primary', value: 'primary' },
+  { label: 'Secondary', value: 'secondary' },
+  { label: 'Destructive', value: 'destructive' },
+  { label: 'Success', value: 'success' },
+];
 
 export interface EditorProps {
   buttons: ButtonOptions[];
@@ -10,32 +17,18 @@ export interface EditorProps {
 }
 
 export const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
-  const [elems, setElems] = React.useState<Array<SelectableValue<string>>>();
-  const [isOpen, setOpen] = React.useState<boolean[]>(buttons.map((e) => false));
+  const [isOpen, setOpen] = React.useState<boolean[]>(buttons.map(() => false));
   const [cacheButtons, setCacheButtons] = React.useState<ButtonOptions[]>(buttons);
-  React.useEffect(() => {
-    let cancel = false;
-    const fetchData = async () => {
-      const ds = await getBackendSrv().get('/api/datasources');
-      if (!cancel) {
-        setElems(ds.map((i: any) => ({ label: i.name, value: i.name, name: i.name })));
-      }
-    };
-    fetchData();
-    return (): void => {
-      cancel = true;
-    };
-  }, []);
 
   const updateCacheButtons = (index: number, newButton: ButtonOptions) => {
-    let currentButton = { ...cacheButtons[index] };
+    const currentButton = { ...cacheButtons[index] };
     setCacheButtons([
       ...cacheButtons.slice(0, index),
       {
-        text: newButton.text || currentButton.text,
-        datasource: newButton.datasource || currentButton.datasource,
-        query: newButton.query || currentButton.query,
-        variant: newButton.variant || currentButton.variant,
+        text: newButton.text ?? currentButton.text,
+        datasource: newButton.datasource ?? currentButton.datasource,
+        query: newButton.query ?? currentButton.query,
+        variant: newButton.variant ?? currentButton.variant,
       },
       ...cacheButtons.slice(index + 1),
     ]);
@@ -48,7 +41,6 @@ export const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
           key={i}
           label={'Button ' + (i + 1).toString()}
           isOpen={isOpen[i]}
-          collapsible
           onToggle={() => {
             setOpen((open) => [...open.slice(0, i), !open[i], ...open.slice(i + 1)]);
           }}
@@ -62,10 +54,9 @@ export const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
             />
           </Field>
           <Field label="Datasource" description="Choose the Datasource for the query">
-            <Select
-              onChange={(e: SelectableValue<string>) => updateCacheButtons(i, { datasource: e.value })}
-              value={b.datasource}
-              options={elems}
+            <DataSourcePicker
+              current={b.datasource}
+              onChange={(ds) => updateCacheButtons(i, { datasource: ds.name })}
             />
           </Field>
           <Field label="Query" description="JSON query to be triggered on Button Click">
@@ -79,15 +70,10 @@ export const Editor: React.FC<EditorProps> = ({ buttons, onChange }) => {
           </Field>
           <Field label="Color" description="Color of the button">
             <RadioButtonGroup
-              options={[
-                { label: 'Primary', value: 'primary' },
-                { label: 'Secondary', value: 'secondary' },
-                { label: 'Destructive', value: 'destructive' },
-                { label: 'Link', value: 'link' },
-              ]}
+              options={variantOptions}
               value={b.variant || 'primary'}
               fullWidth
-              onChange={(e: any) => updateCacheButtons(i, { variant: e })}
+              onChange={(e) => updateCacheButtons(i, { variant: e })}
             ></RadioButtonGroup>
           </Field>
           <Field>

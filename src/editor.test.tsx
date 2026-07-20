@@ -1,81 +1,56 @@
-// import { getBackendSrv } from '@grafana/runtime';
-// import { Button, Collapse, Field } from '@grafana/ui';
-// import { mount, ReactWrapper, shallow } from 'enzyme';
-// import { act } from 'react-dom/test-utils';
-// import { Editor, EditorProps } from './editor';
-// jest.mock('@grafana/runtime');
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { Editor, EditorProps } from './editor';
 
-// describe('editor', () => {
-//   test('add button', () => {
-//     const mockOnChange = jest.fn();
-//     const props: EditorProps = {
-//       buttons: [],
-//       onChange: mockOnChange,
-//     };
-//     const wrapper = shallow(<Editor {...props} />);
-//     expect(wrapper.find(Collapse)).toHaveLength(0);
-//     const field = wrapper.find(Field);
-//     expect(field).toHaveLength(1);
-//     expect(field.children).toHaveLength(1);
-//     const button = field.find(Button);
-//     expect(button).toHaveLength(1);
-//     expect(button.prop('variant')).toBe('secondary');
-//     expect(button.text()).toBe('Add Button');
-//     expect(button.prop('icon')).toBe('plus');
-//     expect(button.prop('size')).toBe('sm');
-//     button.simulate('click');
-//     expect(mockOnChange).toHaveBeenCalledWith([{ text: '', datasource: '', query: '' }]);
-//   });
+jest.mock('@grafana/runtime', () => ({
+  DataSourcePicker: () => <div data-testid="datasource-picker" />,
+}));
 
-//   test('button collapse', () => {
-//     const mockOnChange = jest.fn();
-//     const props: EditorProps = {
-//       buttons: [{ text: 'a' }, { text: 'b' }],
-//       onChange: mockOnChange,
-//     };
+describe('editor', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
-//     const mockGet = jest.fn().mockReturnValue([{ name: 'a' }]);
-//     (getBackendSrv as jest.Mock<any>).mockImplementation(() => ({
-//       get: mockGet,
-//     }));
+  test('add button', async () => {
+    const onChange = jest.fn();
+    const props: EditorProps = { buttons: [], onChange };
+    render(<Editor {...props} />);
 
-//     const wrapper = shallow(<Editor {...props} />);
-//     expect(wrapper.children()).toHaveLength(3);
-//     const collapse = wrapper.find(Collapse);
-//     expect(collapse).toHaveLength(2);
+    const addButton = screen.getByRole('button', { name: /Add Button/ });
+    await userEvent.click(addButton);
+    expect(onChange).toHaveBeenCalledWith([{ text: '', datasource: '', query: '' }]);
+  });
 
-//     collapse.forEach((c, i) => {
-//       expect(c.key()).toBe(i.toString());
-//       expect(c.prop('label')).toBe('Button ' + (i + 1).toString());
-//       expect(c.prop('collapsible')).toBeTruthy();
-//       expect(c.prop('isOpen')).toBeFalsy();
-//     });
+  test('renders one collapsible section per button', () => {
+    const props: EditorProps = { buttons: [{ text: 'a' }, { text: 'b' }], onChange: jest.fn() };
+    render(<Editor {...props} />);
 
-//     collapse.first().simulate('toggle');
-//     wrapper.update();
-//     const open = wrapper.find(Collapse).first();
-//     expect(open.prop('isOpen')).toBeTruthy();
-//   });
+    expect(screen.getByText('Button 1')).toBeInTheDocument();
+    expect(screen.getByText('Button 2')).toBeInTheDocument();
+  });
 
-//   test('button mount', async () => {
-//     const mockOnChange = jest.fn();
-//     const props: EditorProps = {
-//       buttons: [{ text: 'a' }],
-//       onChange: mockOnChange,
-//     };
+  test('editing text and applying propagates the change', async () => {
+    const onChange = jest.fn();
+    const props: EditorProps = { buttons: [{ text: 'a' }], onChange };
+    render(<Editor {...props} />);
 
-//     let wrapper: any = {};
-//     await act(async () => {
-//       wrapper = mount(<Editor {...props} />);
-//     });
-//     let collapse: ReactWrapper = wrapper.find(Collapse);
-//     expect(collapse).toHaveLength(1);
-//     wrapper.unmount();
-//   });
-// });
+    await userEvent.click(screen.getByText('Button 1'));
+    const input = screen.getByPlaceholderText('Button');
+    await userEvent.clear(input);
+    await userEvent.type(input, 'Restart');
+    await userEvent.click(screen.getByRole('button', { name: /Apply/ }));
 
-test('fixme', () => {
-  // FIXME: there seems to be a problem with the package @grafana/data:
-  // as soon as you try to import anything from the package, the following error is thrown:
-  // LanguageProvider cannot reassign to a class (same with DataSourceApi)
+    expect(onChange).toHaveBeenCalledWith([expect.objectContaining({ text: 'Restart' })]);
+  });
+
+  test('delete removes the button', async () => {
+    const onChange = jest.fn();
+    const props: EditorProps = { buttons: [{ text: 'a' }, { text: 'b' }], onChange };
+    render(<Editor {...props} />);
+
+    await userEvent.click(screen.getByText('Button 1'));
+    await userEvent.click(screen.getAllByRole('button', { name: /Delete/ })[0]);
+    expect(onChange).toHaveBeenCalledWith([{ text: 'b' }]);
+  });
 });
