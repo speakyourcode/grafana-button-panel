@@ -42,4 +42,5 @@ Same example with PostgreSQL:
 }
 ```
 
-`refId`, `datasourceId` are automatically sent, so you don't have to set them.
+`refId` and the `datasource` reference are automatically sent, so you don't
+have to set them.

@@ -42,4 +42,17 @@ Same example with PostgreSQL:
 }
 ```
 
-`refId`, `datasourceId` are automatically sent, so you don't have to set them.
+`refId` and the `datasource` reference are automatically sent, so you don't
+have to set them.
+
+## Development
+
+```bash
+npm install        # install dependencies
+npm run dev        # build and watch the frontend
+npm run server     # start a Grafana dev instance via docker compose
+npm run test:ci    # run unit tests
+npm run e2e        # run Playwright e2e tests (requires a running server)
+npm run build      # production build
+```
+

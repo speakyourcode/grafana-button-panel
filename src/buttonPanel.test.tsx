@@ -1,133 +1,95 @@
-// import { AppEvents, DefaultTimeZone, EventBusSrv, getDefaultTimeRange, LoadingState, PanelProps } from '@grafana/data';
-// import { getBackendSrv, getDataSourceSrv, SystemJS } from '@grafana/runtime';
-// import { Button, HorizontalGroup, VerticalGroup } from '@grafana/ui';
-// import { shallow } from 'enzyme';
-// import { ButtonOptions, Options } from 'types';
-// import { ButtonPanel } from './buttonPanel';
-// jest.mock('@grafana/runtime');
+import { PanelProps } from '@grafana/data';
+import { getAppEvents, getBackendSrv, getDataSourceSrv } from '@grafana/runtime';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
+import { of, throwError } from 'rxjs';
+import { ButtonPanel } from './buttonPanel';
+import { Options } from './types';
 
-test('fixme', () => {
-  // FIXME: there seems to be a problem with the package @grafana/data:
-  // as soon as you try to import anything from the package, the following error is thrown:
-  // LanguageProvider cannot reassign to a class (same with DataSourceApi)
+jest.mock('@grafana/runtime', () => ({
+  getAppEvents: jest.fn(),
+  getBackendSrv: jest.fn(),
+  getDataSourceSrv: jest.fn(),
+}));
+
+const buildProps = (options: Partial<Options>): PanelProps<Options> =>
+  ({
+    options: { buttons: [], orientation: 'horizontal', ...options },
+    replaceVariables: (s: string) => s,
+  }) as unknown as PanelProps<Options>;
+
+describe('button panel', () => {
+  const publish = jest.fn();
+  const fetch = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    (getAppEvents as jest.Mock).mockReturnValue({ publish });
+    (getBackendSrv as jest.Mock).mockReturnValue({ fetch });
+    // eslint-disable-next-line @typescript-eslint/no-deprecated
+    (getDataSourceSrv as jest.Mock).mockReturnValue({
+      get: jest.fn().mockResolvedValue({ uid: 'test-uid' }),
+    });
+  });
+
+  test('renders no buttons for empty options', () => {
+    render(<ButtonPanel {...buildProps({})} />);
+    expect(screen.queryAllByRole('button')).toHaveLength(0);
+  });
+
+  test('renders configured buttons and falls back to default text', () => {
+    render(
+      <ButtonPanel
+        {...buildProps({
+          buttons: [{ text: 'Start', variant: 'primary' }, {}],
+        })}
+      />
+    );
+    expect(screen.getByRole('button', { name: 'Start' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Button' })).toBeInTheDocument();
+  });
+
+  test('posts the query and publishes a success alert on click', async () => {
+    fetch.mockReturnValue(of({ status: 200, statusText: 'OK' }));
+    render(
+      <ButtonPanel
+        {...buildProps({
+          buttons: [{ text: 'Run', datasource: 'ds', query: '{ "scenarioId": "random_walk" }' }],
+        })}
+      />
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Run' }));
+
+    await waitFor(() => {
+      expect(fetch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: 'POST',
+          url: 'api/ds/query',
+          data: {
+            queries: [{ datasource: { uid: 'test-uid' }, refId: '1', scenarioId: 'random_walk' }],
+          },
+        })
+      );
+    });
+    await waitFor(() => {
+      expect(publish).toHaveBeenCalledWith(expect.objectContaining({ payload: ['Run: 200 (OK)'] }));
+    });
+  });
+
+  test('publishes an error alert when the request fails', async () => {
+    fetch.mockReturnValue(
+      throwError(() => ({ status: 500, statusText: 'Server Error', data: { message: 'boom' } }))
+    );
+    render(<ButtonPanel {...buildProps({ buttons: [{ text: 'Run', datasource: 'ds' }] })} />);
+
+    await userEvent.click(screen.getByRole('button', { name: 'Run' }));
+
+    await waitFor(() => {
+      expect(publish).toHaveBeenCalledWith(
+        expect.objectContaining({ payload: ['Run: 500 (Server Error) boom'] })
+      );
+    });
+  });
 });
-
-// describe('button panel', () => {
-//   const status = 200;
-//   const statusError = 500;
-//   const statusText = 'OKI';
-//   let defaultProps: PanelProps<Options>;
-
-//   beforeEach(() => {
-//     defaultProps = {
-//       title: 'title',
-//       eventBus: new EventBusSrv(),
-//       id: 1,
-//       data: {
-//         timeRange: getDefaultTimeRange(),
-//         state: LoadingState.Done,
-//         series: [],
-//       },
-//       fieldConfig: { defaults: {}, overrides: [] },
-//       height: 1,
-//       transparent: false,
-//       width: 2,
-//       onChangeTimeRange: () => {},
-//       onFieldConfigChange: () => {},
-//       onOptionsChange: () => {},
-//       renderCounter: 1,
-//       replaceVariables: () => '{}',
-//       timeRange: getDefaultTimeRange(),
-//       timeZone: DefaultTimeZone,
-//       options: {
-//         buttons: [],
-//         orientation: 'horizontal',
-//       } as Options,
-//     };
-//   });
-
-//   test('orientation', () => {
-//     let wrapper = shallow(<ButtonPanel {...defaultProps} />);
-//     expect(wrapper.find(HorizontalGroup)).toHaveLength(1);
-//     expect(wrapper.find(VerticalGroup)).toHaveLength(0);
-//     wrapper.setProps({ options: { buttons: [], orientation: 'vertical' } });
-//     expect(wrapper.find(HorizontalGroup)).toHaveLength(0);
-//     expect(wrapper.find(VerticalGroup)).toHaveLength(1);
-//   });
-
-//   test('buttons', () => {
-//     const wrapper = shallow(<ButtonPanel {...defaultProps} />);
-//     expect(wrapper.find(Button)).toHaveLength(0);
-
-//     const buttons: ButtonOptions[] = [
-//       { text: 'a', variant: 'destructive', datasource: 'a' },
-//       { text: 'b', variant: 'primary', datasource: 'b' },
-//     ];
-//     wrapper.setProps({ options: { buttons: buttons } });
-//     const mockGet = jest.fn().mockReturnValue({ id: 1 });
-//     (getDataSourceSrv as jest.Mock<any>).mockImplementation(() => ({
-//       get: mockGet,
-//     }));
-//     const mockDataSourceRequest = jest.fn().mockReturnValue({
-//       status: status,
-//       statusText: statusText,
-//     });
-//     (getBackendSrv as jest.Mock<any>).mockImplementation(() => ({
-//       datasourceRequest: mockDataSourceRequest,
-//     }));
-//     const mockEmit = jest.fn();
-//     SystemJS.load.mockImplementation(async () => ({
-//       emit: mockEmit,
-//     }));
-
-//     const buttonWidgets = wrapper.find(Button);
-//     expect(buttonWidgets).toHaveLength(buttons.length);
-//     buttonWidgets.forEach((b: any, i: number) => {
-//       expect(b.key()).toBe(i.toString());
-//       expect(b.prop('variant')).toBe(buttons[i].variant);
-//       expect(b.text()).toBe(buttons[i].text);
-//       b.simulate('click');
-//       setImmediate(() => {
-//         expect(mockGet).toHaveBeenCalledWith(buttons[i].datasource);
-//         expect(mockDataSourceRequest).toHaveBeenCalled();
-//         expect(mockEmit).toHaveBeenCalledWith(AppEvents.alertSuccess, [
-//           buttons[i].text + ': ' + status + ' (' + statusText + ')',
-//         ]);
-//       });
-//     });
-//   });
-
-//   test('button error', () => {
-//     const wrapper = shallow(<ButtonPanel {...defaultProps} />);
-//     const buttons: ButtonOptions[] = [{ variant: 'destructive', datasource: 'a' }];
-//     wrapper.setProps({ options: { buttons: buttons } });
-
-//     const mockGet = jest.fn().mockReturnValue({ id: 1 });
-//     (getDataSourceSrv as jest.Mock<any>).mockImplementation(() => ({
-//       get: mockGet,
-//     }));
-//     const msg = 'msg';
-//     const mockDataSourceRequest = jest.fn().mockRejectedValue({
-//       status: statusError,
-//       statusText: statusText,
-//       data: { message: msg },
-//     });
-//     (getBackendSrv as jest.Mock<any>).mockImplementation(() => ({
-//       datasourceRequest: mockDataSourceRequest,
-//     }));
-//     const mockEmit = jest.fn();
-//     SystemJS.load.mockImplementation(async () => ({
-//       emit: mockEmit,
-//     }));
-
-//     const widget = wrapper.find(Button);
-//     expect(widget.text()).toBe('Button');
-//     widget.simulate('click');
-//     setImmediate(() => {
-//       expect(mockEmit).toHaveBeenCalledWith(AppEvents.alertError, [
-//         widget.text() + ': ' + statusError + ' (' + statusText + ')',
-//         msg,
-//       ]);
-//     });
-//   });
-// });
